@@ -795,6 +795,25 @@ function renderSummary() {
 }
 
 // ── EMAIL ──────────────────────────────────────────────────────
+  function copyReport() {
+  const name = document.getElementById('buyerName').value.trim() || 'Buyer';
+  const address = document.getElementById('propAddress').value.trim() || 'Address Not Entered';
+  if(reportItems.length===0){alert('Add at least one system to your report first.');return;}
+  const totalLow = reportItems.reduce((s,i)=>s+i.low,0);
+  const totalHigh = reportItems.reduce((s,i)=>s+i.high,0);
+  const critCount = reportItems.filter(i=>i.sev==='critical').length;
+  let text = `HOME COST REPORT\nPrepared by: ${name}\nProperty: ${address}\nDate: ${new Date().toLocaleDateString()}\nTool by George Kindler · 314.435.1087\n\n${'='.repeat(40)}\nSYSTEMS FLAGGED\n${'='.repeat(40)}\n\n`;
+  reportItems.forEach((item,i)=>{
+    text+=`${i+1}. ${item.icon} ${item.name}\n   Severity: ${item.sev.toUpperCase()}\n   Cost: $${item.low.toLocaleString()}–$${item.high.toLocaleString()}\n   Note: ${item.neg}\n\n`;
+  });
+  text+=`${'='.repeat(40)}\nTOTAL ESTIMATE: $${totalLow.toLocaleString()}–$${totalHigh.toLocaleString()}\nCritical Items: ${critCount}\n${'='.repeat(40)}\nGeorge Kindler · 314.435.1087 · georgeandlizk@gmail.com`;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn=document.getElementById('copyBtn');
+    btn.textContent='✓ COPIED TO CLIPBOARD';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 COPY REPORT TO CLIPBOARD';btn.classList.remove('copied');},3000);
+  }).catch(()=>alert('Copy failed. Please use the email button instead.'));
+}
 function sendEmail() {
   const name = document.getElementById('buyerName').value.trim() || 'Buyer';
   const email = document.getElementById('buyerEmail').value.trim();
